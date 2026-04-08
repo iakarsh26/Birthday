@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Surprise 🎂💖</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+  /* ---------------- Basic Reset & Fonts ---------------- */
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Comic Sans MS', cursive;}
+  body{background:linear-gradient(135deg, #ffe6f0, #e6f0ff);overflow-x:hidden;}
+  .centered-card{max-width:400px;margin:50px auto;padding:20px;background:rgba(255,255,255,0.9);border-radius:20px;box-shadow:0 5px 20px rgba(0,0,0,0.2);text-align:center;position:relative;}
+  h1,h2,p{margin-bottom:15px;}
+  button{padding:12px 25px;margin:10px;border:none;border-radius:15px;font-size:16px;cursor:pointer;transition:0.3s;}
+  .btn-primary{background:#ff80bf;color:#fff;box-shadow:0 4px #e673aa;}
+  .btn-primary:hover{transform:scale(1.1);box-shadow:0 6px #e673aa;}
+  .btn-secondary{background:#ccc;color:#333;}
+  .fade{opacity:0;transition:opacity 0.6s;}
+  .show{opacity:1;}
+  .hidden{display:none;}
+  .floating-heart{position:absolute;width:25px;height:25px;animation:floatUp linear infinite;opacity:0.8;}
+  @keyframes floatUp{
+    0%{transform:translateY(0px);opacity:0;}
+    50%{opacity:1;}
+    100%{transform:translateY(-600px);opacity:0;}
+  }
+  /* Popup Styles */
+  .popup-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:0.3s;}
+  .popup-bg.show{opacity:1;pointer-events:auto;}
+  .popup-content{background:#fff;padding:20px;border-radius:20px;max-width:350px;width:90%;text-align:center;position:relative;}
+  .close-popup{position:absolute;top:10px;right:15px;cursor:pointer;font-size:20px;}
+  /* Cards */
+  .message-card{background:#fff0f5;border-radius:15px;padding:15px;margin:15px 0;box-shadow:0 5px 15px rgba(0,0,0,0.2);cursor:pointer;transition:0.4s;position:relative;overflow:hidden;}
+  .message-card img{width:100%;border-radius:10px;margin-top:10px;}
+  .counter{font-size:14px;color:#666;margin-top:5px;}
+  /* Mobile */
+  @media(max-width:450px){.centered-card{margin:30px 15px;padding:15px;}}
+</style>
+</head>
+<body>
+
+<!-- ---------------- Creator Popup ---------------- -->
+<div class="popup-bg show" id="creatorPopup">
+  <div class="popup-content animate__animated animate__fadeInDown">
+    <span class="close-popup" onclick="closeCreator()">×</span>
+    <h2>🎂 Birthday Surprise Creator</h2>
+    <input type="text" id="yourName" placeholder="Your Name 😎" style="width:80%;padding:10px;margin:10px;border-radius:10px;border:1px solid #ccc;"><br>
+    <input type="text" id="friendName" placeholder="Birthday Person Name 💖" style="width:80%;padding:10px;margin:10px;border-radius:10px;border:1px solid #ccc;"><br>
+    <select id="relation" style="width:84%;padding:10px;border-radius:10px;margin:10px;">
+      <option value="bestie">Best Friend</option>
+      <option value="mom">Mom</option>
+      <option value="dad">Dad</option>
+      <option value="sister">Sister</option>
+      <option value="brother">Brother</option>
+    </select><br>
+    <button class="btn-primary" onclick="startJourney()">Create Surprise 🎉</button>
+  </div>
+</div>
+
+<!-- ---------------- Main Card ---------------- -->
+<div class="centered-card fade" id="mainCard">
+  <h1 id="greeting">Hey! 🎉</h1>
+  <p id="introText">Get ready for something special… 💖</p>
+  <button class="btn-primary" onclick="nextPage()">Start 🎂</button>
+  <div id="heartsContainer"></div>
+</div>
+
+<!-- ---------------- Messages Popup ---------------- -->
+<div class="popup-bg" id="messagesPopup">
+  <div class="popup-content animate__animated animate__fadeIn">
+    <span class="close-popup" onclick="closeMessages()">×</span>
+    <h2>Special Messages 💌</h2>
+    <div id="messageCards"></div>
+    <p id="messageCounter">Messages Remaining: 4</p>
+  </div>
+</div>
+
+<script>
+let yourName='', friendName='', relation='';
+let page=0;
+const totalPages=5;
+const mainCard=document.getElementById('mainCard');
+const greeting=document.getElementById('greeting');
+const introText=document.getElementById('introText');
+const heartsContainer=document.getElementById('heartsContainer');
+
+// ---------------- Creator Popup Functions ----------------
+function startJourney(){
+  yourName=document.getElementById('yourName').value.trim()||'Someone';
+  friendName=document.getElementById('friendName').value.trim()||'Friend';
+  relation=document.getElementById('relation').value;
+  closeCreator();
+  generateHearts();
+  typeIntro();
+}
+
+function closeCreator(){document.getElementById('creatorPopup').classList.remove('show');}
+
+// ---------------- Floating Hearts ----------------
+function generateHearts(){
+  for(let i=0;i<15;i++){
+    const heart=document.createElement('div');
+    heart.className='floating-heart';
+    heart.style.left=Math.random()*90+'%';
+    heart.style.animationDuration=(4+Math.random()*3)+'s';
+    heart.innerText='💖';
+    heartsContainer.appendChild(heart);
+  }
+}
+
+// ---------------- Typing Intro ----------------
+function typeIntro(){
+  const lines=[
+    `Hey ${friendName} 💖`,
+    `You are literally stuck with me forever 😌`,
+    `After all the chaos we've done together...`,
+    `So answer this carefully 👀`
+  ];
+  introText.innerHTML='';
+  let i=0,lineIndex=0;
+  function typeLine(){
+    if(lineIndex<lines.length){
+      let line=lines[lineIndex],charIndex=0;
+      function typeChar(){
+        if(charIndex<line.length){
+          introText.innerHTML+=line[charIndex];
+          charIndex++;
+          setTimeout(typeChar,50);
+        }else{
+          introText.innerHTML+='<br>';
+          lineIndex++;
+          setTimeout(typeLine,600);
+        }
+      }
+      typeChar();
+    }
+  }
+  typeLine();
+}
+
+// ---------------- Page Navigation ----------------
+function nextPage(){
+  page++;
+  if(page===1){
+    greeting.innerText=`Will you be my ${relation} forever? 🫶`;
+    introText.innerHTML='';
+    mainCard.querySelector('button').innerText='YES 💖';
+    mainCard.querySelector('button').onclick=showConfetti;
+  }
+}
+
+// ---------------- Confetti ----------------
+function showConfetti(){
+  confetti({
+    particleCount:200,
+    spread:70,
+    origin:{y:0.6}
+  });
+  greeting.innerText='YAYYYY 💖';
+  introText.innerHTML=`I knew you had no choice 😎<br>You're my favorite human 🫶<br>Thanks for tolerating my nonsense 😂`;
+  mainCard.querySelector('button').innerText='Special Messages 💌';
+  mainCard.querySelector('button').onclick=openMessages;
+}
+
+// ---------------- Messages Popup ----------------
+const messages=[
+  {title:'With Love',text:'You bring so much joy and happiness to everyone around you! Your smile lights up every room.',gif:'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif'},
+  {title:'Dream Big',text:'May all your dreams come true and your year be filled with magic and wonder!',gif:'https://media.giphy.com/media/3o6ZtaO9BZHcOjmErm/giphy.gif'},
+  {title:'New Adventures',text:'Another year of amazing adventures awaits you! Get ready for incredible memories',gif:'https://media.giphy.com/media/l41lFw057lAJQMwg0/giphy.gif'},
+  {title:"You're Amazing",text:'You are absolutely wonderful and deserve all the happiness in the world!',gif:'https://media.giphy.com/media/blSTtZehjAZ8I/giphy.gif'}
+];
+let currentMessage=0;
+function openMessages(){
+  document.getElementById('messagesPopup').classList.add('show');
+  renderMessageCard();
+}
+
+function closeMessages(){document.getElementById('messagesPopup').classList.remove('show');}
+
+function renderMessageCard(){
+  if(currentMessage<messages.length){
+    const container=document.getElementById('messageCards');
+    container.innerHTML='';
+    const msg=messages[currentMessage];
+    const card=document.createElement('div');
+    card.className='message-card animate__animated animate__flipInY';
+    card.innerHTML=`<h3>${msg.title}</h3><p>${msg.text}</p><img src="${msg.gif}">`;
+    card.onclick=()=>{
+      currentMessage++;
+      document.getElementById('messageCounter').innerText = currentMessage<messages.length ? `Messages Remaining: ${messages.length-currentMessage}` : 'All Done ✨';
+      renderMessageCard();
+      if(currentMessage===messages.length) confetti({particleCount:200,spread:80,origin:{y:0.6}});
+    };
+    container.appendChild(card);
+  }
+}
+</script>
+</body>
+</html>
