@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Birthday Surprise 🎂💖</title>
+<title>Birthday Surprise 🎉💖</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
-  /* ---------------- Basic Reset & Fonts ---------------- */
-  *{margin:0;padding:0;box-sizing:border-box;font-family:'Comic Sans MS', cursive;}
-  body{background:linear-gradient(135deg, #ffe6f0, #e6f0ff);overflow-x:hidden;}
-  .centered-card{max-width:400px;margin:50px auto;padding:20px;background:rgba(255,255,255,0.9);border-radius:20px;box-shadow:0 5px 20px rgba(0,0,0,0.2);text-align:center;position:relative;}
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Comic Sans MS',cursive;}
+  body{background:linear-gradient(135deg,#ffe6f0,#e6f0ff);overflow-x:hidden;}
+  .centered-card{max-width:400px;margin:50px auto;padding:20px;background:rgba(255,255,255,0.95);border-radius:20px;box-shadow:0 5px 20px rgba(0,0,0,0.2);text-align:center;position:relative;transition:0.6s;}
   h1,h2,p{margin-bottom:15px;}
   button{padding:12px 25px;margin:10px;border:none;border-radius:15px;font-size:16px;cursor:pointer;transition:0.3s;}
   .btn-primary{background:#ff80bf;color:#fff;box-shadow:0 4px #e673aa;}
@@ -19,32 +18,35 @@
   .fade{opacity:0;transition:opacity 0.6s;}
   .show{opacity:1;}
   .hidden{display:none;}
-  .floating-heart{position:absolute;width:25px;height:25px;animation:floatUp linear infinite;opacity:0.8;}
+  .floating-heart{position:absolute;width:25px;height:25px;animation:floatUp linear infinite;opacity:0.8;font-size:22px;}
   @keyframes floatUp{
     0%{transform:translateY(0px);opacity:0;}
     50%{opacity:1;}
     100%{transform:translateY(-600px);opacity:0;}
   }
-  /* Popup Styles */
+  .progress-bar{height:12px;width:90%;background:#eee;border-radius:10px;margin:10px auto;overflow:hidden;}
+  .progress-fill{height:100%;width:0%;background:#ff80bf;border-radius:10px;transition:0.6s;}
   .popup-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:0.3s;}
   .popup-bg.show{opacity:1;pointer-events:auto;}
   .popup-content{background:#fff;padding:20px;border-radius:20px;max-width:350px;width:90%;text-align:center;position:relative;}
   .close-popup{position:absolute;top:10px;right:15px;cursor:pointer;font-size:20px;}
-  /* Cards */
-  .message-card{background:#fff0f5;border-radius:15px;padding:15px;margin:15px 0;box-shadow:0 5px 15px rgba(0,0,0,0.2);cursor:pointer;transition:0.4s;position:relative;overflow:hidden;}
+  .message-card{background:#fff0f5;border-radius:15px;padding:15px;margin:15px 0;box-shadow:0 5px 15px rgba(0,0,0,0.2);cursor:pointer;transition:0.4s;overflow:hidden;}
   .message-card img{width:100%;border-radius:10px;margin-top:10px;}
   .counter{font-size:14px;color:#666;margin-top:5px;}
-  /* Mobile */
+  #creatorButton{position:fixed;bottom:20px;right:20px;background:#ff80bf;color:#fff;padding:10px 15px;border-radius:50px;cursor:pointer;z-index:999;box-shadow:0 3px #e673aa;}
   @media(max-width:450px){.centered-card{margin:30px 15px;padding:15px;}}
 </style>
 </head>
 <body>
 
+<!-- ---------------- Small Popup Creator Button ---------------- -->
+<div id="creatorButton" onclick="openCreator()">🎁 Create Yours</div>
+
 <!-- ---------------- Creator Popup ---------------- -->
-<div class="popup-bg show" id="creatorPopup">
+<div class="popup-bg" id="creatorPopup">
   <div class="popup-content animate__animated animate__fadeInDown">
     <span class="close-popup" onclick="closeCreator()">×</span>
-    <h2>🎂 Birthday Surprise Creator</h2>
+    <h2>🎂 Surprise Creator</h2>
     <input type="text" id="yourName" placeholder="Your Name 😎" style="width:80%;padding:10px;margin:10px;border-radius:10px;border:1px solid #ccc;"><br>
     <input type="text" id="friendName" placeholder="Birthday Person Name 💖" style="width:80%;padding:10px;margin:10px;border-radius:10px;border:1px solid #ccc;"><br>
     <select id="relation" style="width:84%;padding:10px;border-radius:10px;margin:10px;">
@@ -59,9 +61,10 @@
 </div>
 
 <!-- ---------------- Main Card ---------------- -->
-<div class="centered-card fade" id="mainCard">
+<div class="centered-card fade show" id="mainCard">
   <h1 id="greeting">Hey! 🎉</h1>
   <p id="introText">Get ready for something special… 💖</p>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
   <button class="btn-primary" onclick="nextPage()">Start 🎂</button>
   <div id="heartsContainer"></div>
 </div>
@@ -77,15 +80,20 @@
 </div>
 
 <script>
+// ---------------- Global Variables ----------------
 let yourName='', friendName='', relation='';
-let page=0;
-const totalPages=5;
+let page=0, totalPages=5;
+let currentMessage=0;
+
 const mainCard=document.getElementById('mainCard');
 const greeting=document.getElementById('greeting');
 const introText=document.getElementById('introText');
 const heartsContainer=document.getElementById('heartsContainer');
+const progressFill=document.getElementById('progressFill');
 
 // ---------------- Creator Popup Functions ----------------
+function openCreator(){document.getElementById('creatorPopup').classList.add('show');}
+function closeCreator(){document.getElementById('creatorPopup').classList.remove('show');}
 function startJourney(){
   yourName=document.getElementById('yourName').value.trim()||'Someone';
   friendName=document.getElementById('friendName').value.trim()||'Friend';
@@ -94,8 +102,6 @@ function startJourney(){
   generateHearts();
   typeIntro();
 }
-
-function closeCreator(){document.getElementById('creatorPopup').classList.remove('show');}
 
 // ---------------- Floating Hearts ----------------
 function generateHearts(){
@@ -118,7 +124,7 @@ function typeIntro(){
     `So answer this carefully 👀`
   ];
   introText.innerHTML='';
-  let i=0,lineIndex=0;
+  let lineIndex=0;
   function typeLine(){
     if(lineIndex<lines.length){
       let line=lines[lineIndex],charIndex=0;
@@ -142,6 +148,7 @@ function typeIntro(){
 // ---------------- Page Navigation ----------------
 function nextPage(){
   page++;
+  progressFill.style.width=(page/totalPages*100)+'%';
   if(page===1){
     greeting.innerText=`Will you be my ${relation} forever? 🫶`;
     introText.innerHTML='';
@@ -152,25 +159,21 @@ function nextPage(){
 
 // ---------------- Confetti ----------------
 function showConfetti(){
-  confetti({
-    particleCount:200,
-    spread:70,
-    origin:{y:0.6}
-  });
+  confetti({particleCount:200,spread:70,origin:{y:0.6}});
   greeting.innerText='YAYYYY 💖';
   introText.innerHTML=`I knew you had no choice 😎<br>You're my favorite human 🫶<br>Thanks for tolerating my nonsense 😂`;
   mainCard.querySelector('button').innerText='Special Messages 💌';
   mainCard.querySelector('button').onclick=openMessages;
 }
 
-// ---------------- Messages Popup ----------------
+// ---------------- Messages ----------------
 const messages=[
   {title:'With Love',text:'You bring so much joy and happiness to everyone around you! Your smile lights up every room.',gif:'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif'},
   {title:'Dream Big',text:'May all your dreams come true and your year be filled with magic and wonder!',gif:'https://media.giphy.com/media/3o6ZtaO9BZHcOjmErm/giphy.gif'},
   {title:'New Adventures',text:'Another year of amazing adventures awaits you! Get ready for incredible memories',gif:'https://media.giphy.com/media/l41lFw057lAJQMwg0/giphy.gif'},
   {title:"You're Amazing",text:'You are absolutely wonderful and deserve all the happiness in the world!',gif:'https://media.giphy.com/media/blSTtZehjAZ8I/giphy.gif'}
 ];
-let currentMessage=0;
+
 function openMessages(){
   document.getElementById('messagesPopup').classList.add('show');
   renderMessageCard();
@@ -188,7 +191,7 @@ function renderMessageCard(){
     card.innerHTML=`<h3>${msg.title}</h3><p>${msg.text}</p><img src="${msg.gif}">`;
     card.onclick=()=>{
       currentMessage++;
-      document.getElementById('messageCounter').innerText = currentMessage<messages.length ? `Messages Remaining: ${messages.length-currentMessage}` : 'All Done ✨';
+      document.getElementById('messageCounter').innerText=currentMessage<messages.length?`Messages Remaining: ${messages.length-currentMessage}`:'All Done ✨';
       renderMessageCard();
       if(currentMessage===messages.length) confetti({particleCount:200,spread:80,origin:{y:0.6}});
     };
