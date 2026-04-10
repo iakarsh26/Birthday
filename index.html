@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Birthday Surprise 🎂💖</title>
+<title>Birthday Surprise 💖</title>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -21,10 +21,10 @@ body{
 .app{
   width:100%;
   max-width:380px;
-  height:90vh;
+  height:92vh;
   background:white;
   border-radius:20px;
-  padding:18px;
+  padding:16px;
   box-shadow:0 10px 25px rgba(0,0,0,0.2);
   display:flex;
   flex-direction:column;
@@ -34,9 +34,9 @@ body{
 
 img{
   width:100%;
-  border-radius:12px;
-  max-height:220px;
+  max-height:200px;
   object-fit:cover;
+  border-radius:12px;
 }
 
 button{
@@ -45,8 +45,9 @@ button{
   border-radius:25px;
   background:#ff6fa5;
   color:white;
-  font-size:16px;
+  font-size:15px;
   width:100%;
+  margin-top:10px;
 }
 
 .progress{
@@ -70,21 +71,12 @@ button{
   justify-content:center;
   align-items:center;
 }
-
 .popup-box{
   background:white;
   padding:20px;
   border-radius:15px;
   width:90%;
   max-width:300px;
-}
-
-.msg-card{
-  background:#ffe6f0;
-  padding:15px;
-  border-radius:12px;
-  margin:10px 0;
-  cursor:pointer;
 }
 
 #creatorBtn{
@@ -96,6 +88,26 @@ button{
   border-radius:25px;
   color:white;
 }
+
+/* cinematic */
+#overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+}
+.handwritten{
+  background:#fff8e7;
+  padding:15px;
+  border-radius:12px;
+  text-align:left;
+}
+.glow{
+  color:#ff4d88;
+  font-weight:bold;
+}
+
+/* gift */
+#giftBox{font-size:70px;cursor:pointer;}
 </style>
 </head>
 
@@ -112,97 +124,120 @@ button{
 
 <div id="creatorBtn" onclick="openPop()">Create 🎁</div>
 
+<!-- POPUP -->
 <div class="popup" id="pop">
   <div class="popup-box">
-    <h3>Enter Name</h3>
-    <input id="name" style="width:100%;padding:10px;"><br><br>
-    <button onclick="save()">Done</button>
+    <h3>Create 🎁</h3>
+    <input id="fromName" placeholder="Your Name" style="width:100%;padding:10px;margin:5px 0;">
+    <input id="toName" placeholder="Birthday Person" style="width:100%;padding:10px;margin:5px 0;">
+    <button onclick="generateLink()">Generate 🔗</button>
+    <p id="linkBox"></p>
+    <button onclick="copyLink()">Copy 📋</button>
+    <button onclick="shareWA()">WhatsApp 📲</button>
   </div>
 </div>
 
+<!-- MESSAGE POP -->
 <div class="popup" id="msgPop">
   <div class="popup-box">
-    <h3>Special Messages 💌</h3>
+    <h3>Messages 💌</h3>
     <div id="msgBox"></div>
     <p id="count"></p>
   </div>
 </div>
 
+<audio id="bgMusic" loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-happyrock.mp3">
+</audio>
+
+<button onclick="toggleMusic()" style="position:fixed;top:10px;right:10px;">🔊</button>
+
 <script>
 let step=0;
-let name="Someone";
+let from="Someone";
+let to="Friend";
 
+// URL params
+const params=new URLSearchParams(location.search);
+from=params.get("from")||"Someone";
+to=params.get("to")||"Friend";
+
+text.innerText="Hey "+to+" 💖";
+
+// SOUND
+const clickSound=new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
+
+// FLOW
 function next(){
+  clickSound.play();
   step++;
-  bar.style.width=(step*11)+"%";
+  bar.style.width=(step*10)+"%";
 
   if(step==1){
-    text.innerText="Hey "+name+" 💖";
+    text.innerText="This is not normal 👀";
   }
 
   if(step==2){
-    text.innerText="This is not a normal birthday wish 👀";
-  }
-
-  if(step==3){
     text.innerText="Something special is coming 😏";
   }
 
-  if(step==4){
-    text.innerText="Loading surprise...";
+  if(step==3){
+    text.innerText="Loading...";
     btn.style.display="none";
-    let i=0;
-    let load=setInterval(()=>{
-      bar.style.width=(40+i*5)+"%";
-      i++;
-      if(i>10){
-        clearInterval(load);
-        btn.style.display="block";
-        text.innerText="Ready? 🎁";
-      }
-    },100);
+    setTimeout(()=>{btn.style.display="block";text.innerText="Ready?"},1500);
   }
 
-  if(step==5){
-    text.innerText="HAPPY BIRTHDAY 🎂💖";
+  if(step==4){
+    text.innerText="HAPPY BIRTHDAY "+to+" 🎂💖";
     gif.src="https://media.giphy.com/media/blSTtZehjAZ8I/giphy.gif";
     confetti();
   }
 
+  if(step==5){
+    text.innerHTML="Open your gift 🎁<div id='giftBox' onclick='openGift()'>🎁</div>";
+    btn.style.display="none";
+  }
+
   if(step==6){
-    text.innerText="We both share one brain cell 😂";
+    text.innerText="Cut the cake 🎂";
+    btn.innerText="Cut Cake 🎂";
+    btn.style.display="block";
+    btn.onclick=cutCake;
   }
 
   if(step==7){
-    text.innerText="Still can't believe you tolerate me 😭";
+    btn.innerText="Open Messages 💌";
+    btn.onclick=openMsg;
   }
 
   if(step==8){
-    btn.innerText="Open Messages 💌";
-    btn.onclick=openMessages;
-  }
-
-  if(step==9){
     showParagraph();
   }
 }
 
-function openPop(){pop.style.display="flex";}
-function save(){
-  name=document.getElementById("name").value||"Someone";
-  pop.style.display="none";
+// GIFT
+function openGift(){
+  document.getElementById("giftBox").innerText="🎉";
+  confetti();
+  setTimeout(next,1200);
 }
 
-const msgs=[
-"With Love 💖\nYou bring so much joy!",
-"Dream Big ✨\nMay all dreams come true!",
-"New Adventures 🚀\nAmazing memories ahead!",
-"You're Amazing 🫶\nYou deserve everything!"
-];
+// CAKE
+function cutCake(){
+  confetti();
+  setTimeout(next,1000);
+}
 
+// MESSAGES
+let msgs=[
+"With Love 💖",
+"Dream Big ✨",
+"New Adventures 🚀",
+"You're Amazing 🫶"
+];
 let i=0;
 
-function openMessages(){
+function openMsg(){
   msgPop.style.display="flex";
   i=0;
   showMsg();
@@ -210,35 +245,81 @@ function openMessages(){
 
 function showMsg(){
   if(i<msgs.length){
-    msgBox.innerHTML=`<div class="msg-card">${msgs[i]}</div>`;
+    msgBox.innerHTML=msgs[i];
     count.innerText="Remaining: "+(msgs.length-i);
     msgBox.onclick=()=>{i++;showMsg();}
   }else{
-    msgBox.innerHTML="<h3>All Done ✨</h3>";
+    msgBox.innerHTML="All Done ✨ Tap";
     count.innerText="";
-    confetti();
+    msgBox.onclick=()=>{
+      msgPop.style.display="none";
+      next();
+    }
   }
 }
 
+// PARAGRAPH
 function showParagraph(){
   document.querySelector(".app").innerHTML=`
-  <h3>💌</h3>
-  <p id="para"></p>
+  <div id="overlay"></div>
+  <div class="handwritten" id="para"></div>
   <button onclick="location.reload()">Restart 🔁</button>
   `;
 
-  let textPara="I don’t even know where to start... but I’m really glad you exist. From stupid jokes to real talks... everything with you feels different. You matter a lot more than you think. Happy Birthday 💖";
-  let i=0;
+  let lines=[
+"I’m really glad you exist.",
+"From stupid jokes to real talks…",
+"You make everything better.",
+"You matter. A lot.",
+"Happy Birthday "+to+" 💖",
+"– "+from
+  ];
 
-  function type(){
-    if(i<textPara.length){
-      document.getElementById("para").innerHTML+=textPara[i];
+  let i=0;
+  function show(){
+    if(i<lines.length){
+      para.innerHTML+=lines[i]+"<br><br>";
+      if(lines[i].includes("Happy")){
+        para.classList.add("glow");
+        confetti();
+      }
       i++;
-      setTimeout(type,30);
+      setTimeout(show,800);
     }
   }
-  type();
+  show();
 }
+
+// CREATE
+function openPop(){pop.style.display="flex";}
+function generateLink(){
+  let f=fromName.value||"Someone";
+  let t=toName.value||"Friend";
+  let url=location.origin+location.pathname+`?from=${f}&to=${t}`;
+  linkBox.innerText=url;
+}
+function copyLink(){
+  navigator.clipboard.writeText(linkBox.innerText);
+  alert("Copied 😎");
+}
+function shareWA(){
+  window.open("https://wa.me/?text="+encodeURIComponent(linkBox.innerText));
+}
+
+// MUSIC
+let playing=false;
+function toggleMusic(){
+  if(playing){bgMusic.pause();}
+  else{bgMusic.play();}
+  playing=!playing;
+}
+
+// SWIPE
+let startY=0;
+document.addEventListener("touchstart",e=>startY=e.touches[0].clientY);
+document.addEventListener("touchend",e=>{
+  if(startY-e.changedTouches[0].clientY>50){next();}
+});
 </script>
 
 </body>
