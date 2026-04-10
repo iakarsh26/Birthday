@@ -3,25 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For You 💖</title>
+<title>Birthday 💖</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
-:root{
-  --pink:#ff6fa5;
-  --pink2:#ff9ac2;
-}
-
 body{
   margin:0;
   font-family:'Poppins',sans-serif;
-  background:linear-gradient(135deg,#ffd6e0,#e6f0ff);
+  height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
+  background:linear-gradient(135deg,#ffd6e0,#e6f0ff);
+  overflow:hidden;
 }
 
 /* card */
@@ -29,11 +25,11 @@ body{
   width:100%;
   max-width:380px;
   height:92vh;
-  padding:20px;
-  border-radius:24px;
+  background:rgba(255,255,255,0.7);
   backdrop-filter:blur(20px);
-  background:rgba(255,255,255,0.65);
+  border-radius:24px;
   box-shadow:0 20px 40px rgba(0,0,0,0.2);
+  padding:20px;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -44,7 +40,7 @@ body{
 /* text */
 h2{
   font-size:20px;
-  margin-bottom:20px;
+  color:#333;
   line-height:1.5;
 }
 
@@ -53,15 +49,16 @@ h2{
   padding:14px;
   border:none;
   border-radius:30px;
-  background:linear-gradient(135deg,var(--pink),var(--pink2));
+  background:linear-gradient(135deg,#ff6fa5,#ff9ac2);
   color:white;
   font-size:15px;
-  box-shadow:0 10px 20px rgba(255,105,150,0.4);
   cursor:pointer;
+  margin-top:20px;
+  box-shadow:0 10px 20px rgba(255,105,150,0.4);
 }
 .btn:active{transform:scale(0.95);}
 
-/* fade */
+/* animation */
 .fade{
   animation:fadeUp .5s ease;
 }
@@ -74,7 +71,7 @@ h2{
 .gift{
   font-size:70px;
   cursor:pointer;
-  transition:.3s;
+  transition:0.3s;
 }
 .gift:hover{transform:scale(1.1);}
 
@@ -90,7 +87,7 @@ h2{
 
 /* glow */
 .glow{
-  color:var(--pink);
+  color:#ff4d88;
   font-weight:600;
 }
 </style>
@@ -99,13 +96,17 @@ h2{
 <body>
 
 <div class="app" id="app">
-  <h2 class="fade">Wait… 👀</h2>
-  <button class="btn" onclick="next()">Start</button>
+  <h2 class="fade">Ready for something special? 👀</h2>
+  <button class="btn" onclick="start()">Start</button>
 </div>
 
 <script>
 let step=0;
-let name="Someone";
+let from="", to="";
+
+// PERSONALIZATION
+to = prompt("Birthday Person Name 💖") || "Friend";
+from = prompt("Your Name 🫶") || "Someone";
 
 function render(text, btn=true){
   app.innerHTML=`
@@ -114,22 +115,27 @@ function render(text, btn=true){
   `;
 }
 
+function start(){
+  next();
+}
+
 function next(){
   step++;
 
-  if(step==1) render("Okay wait… don’t rush this 😶✨");
-  if(step==2) render("I didn’t just send a message… I made this for you 🫠");
-  if(step==3) render("Hey "+name+" 👀💖");
-  if(step==4) render("And no… this isn’t some basic birthday wish 😏🎁");
+  if(step==1) render("Okay "+to+"… don’t rush this 😶✨");
+  if(step==2) render("Something was made only for you 🫠");
+  if(step==3) render("Hey "+to+" 👀💖");
+  if(step==4) render("This is not a normal birthday wish 😏🎁");
 
   if(step==5){
-    render("It’s YOUR day today 😌🎂✨");
+    render("It’s YOUR day today 🎂✨", false);
     confetti({particleCount:120,spread:80});
+    setTimeout(next,1500);
   }
 
   if(step==6){
     app.innerHTML=`
-      <h2 class="fade">Tap to open 🎁</h2>
+      <h2 class="fade">A small surprise 🎁</h2>
       <div class="gift" onclick="openGift()">🎁</div>
     `;
   }
@@ -143,18 +149,16 @@ function next(){
   }
 }
 
-/* gift */
 function openGift(){
   confetti();
-  render("Not gonna lie… life feels better with you in it 🫶🥹",false);
+  render("Life feels better when you're around 🫶💖", false);
   setTimeout(next,1800);
 }
 
-/* fun */
 function showFun(){
   let lines=[
-    "We talk nonsense… but somehow it makes sense 😂🧠",
-    "Half of our chats = random, other half = therapy 😭🫂"
+    "We talk nonsense… but it somehow makes sense 😂",
+    "Random chats = best part of the day 😭🫂"
   ];
 
   let i=0;
@@ -168,45 +172,21 @@ function showFun(){
   loop();
 }
 
-/* final paragraph */
 function showFinal(){
   app.innerHTML=`<div class="paper" id="para"></div>`;
 
-  let lines=[
-"I don’t usually do things like this… 😅",
-"But you’re not exactly a usual person in my life 💭",
-"",
-"Somehow… you became important without me even realizing when it happened 🫠",
-"",
-"It’s the little things — random talks, stupid jokes, those unexpected deep conversations… 😂💬",
-"",
-"And honestly, I wouldn’t trade that for anything 🫶",
-"",
-"You just make things feel lighter… even on bad days 🌙",
-"",
-"And yeah… I don’t say this much,",
-"But I really appreciate you being here 🤍",
-"",
-"So today isn’t just another day… it’s yours 🎂✨",
-"",
-"And I hope you feel as special as you actually are 💖🥺",
-"",
-"Happy Birthday "+name+" 🎂💖",
-"– Someone who actually cares 🫶"
-  ];
+  let text =
+`I don’t usually do things like this… 😅 but you’re not a usual person in my life 💭 Somehow you became important without even realizing it 🫠 It’s the little things — random talks, jokes, deep conversations 😂💬 And honestly I wouldn’t trade that for anything 🫶 You make things lighter even on bad days 🌙 And yeah I don’t say this much but I really appreciate you 🤍 Today isn’t just another day… it’s yours 🎂✨ I hope you feel as special as you actually are 💖 Happy Birthday ${to} 🎂💖 – ${from}`;
 
   let i=0;
   function type(){
-    if(i<lines.length){
-      para.innerHTML+=lines[i]+"<br><br>";
-      if(lines[i].includes("Happy")){
-        para.classList.add("glow");
-        confetti();
-      }
+    if(i<text.length){
+      para.innerHTML += text.charAt(i);
       i++;
-      setTimeout(type,700);
+      setTimeout(type,25);
     }else{
-      app.innerHTML+=`<button class="btn" onclick="location.reload()">Replay 🔁</button>`;
+      confetti();
+      app.innerHTML += `<button class="btn" onclick="location.reload()">Replay 🔁</button>`;
     }
   }
   type();
