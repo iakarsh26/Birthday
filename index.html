@@ -3,193 +3,225 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Birthday 💖</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<title>For Someone Special 💖</title>
 
 <style>
-body{
-  margin:0;
-  font-family:'Poppins',sans-serif;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:linear-gradient(135deg,#ffd6e0,#e6f0ff);
-  overflow:hidden;
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  overflow-x: hidden;
+  text-align: center;
+  color: #fff;
 }
 
-/* card */
-.app{
-  width:100%;
-  max-width:380px;
-  height:92vh;
-  background:rgba(255,255,255,0.7);
-  backdrop-filter:blur(20px);
-  border-radius:24px;
-  box-shadow:0 20px 40px rgba(0,0,0,0.2);
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  text-align:center;
-  transition:0.5s;
+/* Loader */
+#loader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  font-size: 24px;
 }
 
-/* text */
-h2{
-  font-size:20px;
-  color:#333;
-  line-height:1.5;
+/* Sections */
+.section {
+  display: none;
+  padding: 40px 20px;
+  min-height: 100vh;
 }
 
-/* button */
-.btn{
-  padding:14px;
-  border:none;
-  border-radius:30px;
-  background:linear-gradient(135deg,#ff6fa5,#ff9ac2);
-  color:white;
-  font-size:15px;
-  cursor:pointer;
-  margin-top:20px;
-  box-shadow:0 10px 20px rgba(255,105,150,0.4);
-}
-.btn:active{transform:scale(0.95);}
-
-/* animation */
-.fade{
-  animation:fadeUp .5s ease;
-}
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(20px);}
-  to{opacity:1;transform:translateY(0);}
+.active {
+  display: block;
 }
 
-/* gift */
-.gift{
-  font-size:70px;
-  cursor:pointer;
-  transition:0.3s;
-}
-.gift:hover{transform:scale(1.1);}
-
-/* paragraph */
-.paper{
-  background:#fff8e7;
-  padding:16px;
-  border-radius:14px;
-  text-align:left;
-  line-height:1.6;
-  box-shadow:0 10px 20px rgba(0,0,0,0.2);
+/* Button */
+.btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 30px;
+  background: white;
+  color: #ff4d6d;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
 }
 
-/* glow */
-.glow{
-  color:#ff4d88;
-  font-weight:600;
+/* Envelope */
+.envelope {
+  width: 200px;
+  height: 120px;
+  background: #ff4d6d;
+  margin: auto;
+  position: relative;
+  cursor: pointer;
+}
+
+.envelope:before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: 0;
+  border-left: 100px solid transparent;
+  border-right: 100px solid transparent;
+  border-bottom: 60px solid #ff4d6d;
+}
+
+/* Balloons */
+.balloon {
+  width: 50px;
+  height: 70px;
+  background: red;
+  border-radius: 50%;
+  position: absolute;
+  bottom: -100px;
+  animation: float 6s infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-100vh); }
+}
+
+/* Popup */
+.popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  color: black;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* Form */
+#formBox {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  color: black;
+  padding: 20px;
+  border-radius: 15px;
+}
+input, textarea {
+  width: 90%;
+  margin: 5px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="app" id="app">
-  <h2 class="fade">Ready for something special? 👀</h2>
-  <button class="btn" onclick="start()">Start</button>
+<div id="loader">Loading surprise... 💖</div>
+
+<!-- Section 1 -->
+<div class="section active" id="s1">
+  <h1>Wait... 😊</h1>
+  <button class="btn" onclick="next()">Tap to Begin</button>
+</div>
+
+<!-- Section 2 -->
+<div class="section" id="s2">
+  <h2>Open this 💌</h2>
+  <div class="envelope" onclick="next()"></div>
+</div>
+
+<!-- Section 3 -->
+<div class="section" id="s3">
+  <h2 id="msg"></h2>
+  <button class="btn" onclick="next()">Next</button>
+</div>
+
+<!-- Section 4 -->
+<div class="section" id="s4">
+  <h2>Tap balloons 🎈</h2>
+</div>
+
+<!-- Section 5 -->
+<div class="section" id="s5">
+  <h1>🎉 Happy Birthday 🎉</h1>
+  <p>You are very special 💖</p>
+</div>
+
+<!-- Popup Button -->
+<div class="popup" onclick="openForm()">Create Yours 💖</div>
+
+<!-- Form -->
+<div id="formBox">
+  <h3>Create your version</h3>
+  <input type="text" id="name" placeholder="Name"><br>
+  <textarea id="customMsg" placeholder="Message"></textarea><br>
+  <button onclick="generate()">Generate</button>
 </div>
 
 <script>
-let step=0;
-let from="", to="";
+let current = 1;
 
-// PERSONALIZATION
-to = prompt("Birthday Person Name 💖") || "Friend";
-from = prompt("Your Name 🫶") || "Someone";
+window.onload = () => {
+  setTimeout(() => {
+    document.getElementById("loader").style.display = "none";
+  }, 2000);
+};
 
-function render(text, btn=true){
-  app.innerHTML=`
-    <h2 class="fade">${text}</h2>
-    ${btn?'<button class="btn" onclick="next()">Continue</button>':''}
-  `;
-}
+function next() {
+  document.getElementById("s" + current).classList.remove("active");
+  current++;
+  document.getElementById("s" + current).classList.add("active");
 
-function start(){
-  next();
-}
-
-function next(){
-  step++;
-
-  if(step==1) render("Okay "+to+"… don’t rush this 😶✨");
-  if(step==2) render("Something was made only for you 🫠");
-  if(step==3) render("Hey "+to+" 👀💖");
-  if(step==4) render("This is not a normal birthday wish 😏🎁");
-
-  if(step==5){
-    render("It’s YOUR day today 🎂✨", false);
-    confetti({particleCount:120,spread:80});
-    setTimeout(next,1500);
+  if(current === 3){
+    typeMessage();
   }
 
-  if(step==6){
-    app.innerHTML=`
-      <h2 class="fade">A small surprise 🎁</h2>
-      <div class="gift" onclick="openGift()">🎁</div>
-    `;
-  }
-
-  if(step==7){
-    showFun();
-  }
-
-  if(step==8){
-    showFinal();
+  if(current === 4){
+    createBalloons();
   }
 }
 
-function openGift(){
-  confetti();
-  render("Life feels better when you're around 🫶💖", false);
-  setTimeout(next,1800);
-}
+function typeMessage(){
+  let text = "You mean a lot to me 💖\nThis day is special because of YOU 🥹";
+  let i = 0;
+  let speed = 50;
+  let msg = document.getElementById("msg");
 
-function showFun(){
-  let lines=[
-    "We talk nonsense… but it somehow makes sense 😂",
-    "Random chats = best part of the day 😭🫂"
-  ];
-
-  let i=0;
-  function loop(){
-    if(i<lines.length){
-      render(lines[i],false);
+  function typing(){
+    if(i < text.length){
+      msg.innerHTML += text.charAt(i);
       i++;
-      setTimeout(loop,1800);
-    }else next();
-  }
-  loop();
-}
-
-function showFinal(){
-  app.innerHTML=`<div class="paper" id="para"></div>`;
-
-  let text =
-`I don’t usually do things like this… 😅 but you’re not a usual person in my life 💭 Somehow you became important without even realizing it 🫠 It’s the little things — random talks, jokes, deep conversations 😂💬 And honestly I wouldn’t trade that for anything 🫶 You make things lighter even on bad days 🌙 And yeah I don’t say this much but I really appreciate you 🤍 Today isn’t just another day… it’s yours 🎂✨ I hope you feel as special as you actually are 💖 Happy Birthday ${to} 🎂💖 – ${from}`;
-
-  let i=0;
-  function type(){
-    if(i<text.length){
-      para.innerHTML += text.charAt(i);
-      i++;
-      setTimeout(type,25);
-    }else{
-      confetti();
-      app.innerHTML += `<button class="btn" onclick="location.reload()">Replay 🔁</button>`;
+      setTimeout(typing, speed);
     }
   }
-  type();
+  typing();
+}
+
+function createBalloons(){
+  for(let i=0;i<10;i++){
+    let b = document.createElement("div");
+    b.className = "balloon";
+    b.style.left = Math.random()*100 + "vw";
+    b.onclick = () => b.remove();
+    document.body.appendChild(b);
+  }
+}
+
+function openForm(){
+  document.getElementById("formBox").style.display = "block";
+}
+
+function generate(){
+  let name = document.getElementById("name").value;
+  let msg = document.getElementById("customMsg").value;
+
+  if(name){
+    alert("Link generated! (Demo)\nShare this idea 💖");
+  }
 }
 </script>
 
