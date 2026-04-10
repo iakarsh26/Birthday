@@ -5,12 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For You 💖</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
+:root{
+  --pink:#ff6fa5;
+  --pink2:#ff9ac2;
+}
+
 body{
   margin:0;
-  font-family:sans-serif;
+  font-family:'Poppins',sans-serif;
   background:linear-gradient(135deg,#ffd6e0,#e6f0ff);
   display:flex;
   justify-content:center;
@@ -18,14 +24,16 @@ body{
   height:100vh;
 }
 
+/* card */
 .app{
   width:100%;
   max-width:380px;
-  height:90vh;
-  background:white;
-  border-radius:20px;
+  height:92vh;
   padding:20px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+  border-radius:24px;
+  backdrop-filter:blur(20px);
+  background:rgba(255,255,255,0.65);
+  box-shadow:0 20px 40px rgba(0,0,0,0.2);
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -33,42 +41,57 @@ body{
   transition:0.5s;
 }
 
-h2{margin-bottom:20px;}
+/* text */
+h2{
+  font-size:20px;
+  margin-bottom:20px;
+  line-height:1.5;
+}
 
-button{
+/* button */
+.btn{
   padding:14px;
   border:none;
-  border-radius:25px;
-  background:#ff6fa5;
+  border-radius:30px;
+  background:linear-gradient(135deg,var(--pink),var(--pink2));
   color:white;
-  font-size:16px;
-  margin-top:20px;
+  font-size:15px;
+  box-shadow:0 10px 20px rgba(255,105,150,0.4);
+  cursor:pointer;
 }
+.btn:active{transform:scale(0.95);}
 
+/* fade */
 .fade{
-  animation:fade 0.5s ease;
+  animation:fadeUp .5s ease;
 }
-@keyframes fade{
+@keyframes fadeUp{
   from{opacity:0;transform:translateY(20px);}
   to{opacity:1;transform:translateY(0);}
 }
 
-#gift{
+/* gift */
+.gift{
   font-size:70px;
   cursor:pointer;
+  transition:.3s;
 }
+.gift:hover{transform:scale(1.1);}
 
-.handwritten{
+/* paragraph */
+.paper{
   background:#fff8e7;
-  padding:15px;
-  border-radius:12px;
+  padding:16px;
+  border-radius:14px;
   text-align:left;
   line-height:1.6;
+  box-shadow:0 10px 20px rgba(0,0,0,0.2);
 }
 
+/* glow */
 .glow{
-  color:#ff4d88;
-  font-weight:bold;
+  color:var(--pink);
+  font-weight:600;
 }
 </style>
 </head>
@@ -76,114 +99,104 @@ button{
 <body>
 
 <div class="app" id="app">
-  <h2 id="text">Wait… 👀</h2>
-  <button onclick="next()">Start</button>
+  <h2 class="fade">Wait… 👀</h2>
+  <button class="btn" onclick="next()">Start</button>
 </div>
 
 <script>
 let step=0;
 let name="Someone";
 
-// flow
+function render(text, btn=true){
+  app.innerHTML=`
+    <h2 class="fade">${text}</h2>
+    ${btn?'<button class="btn" onclick="next()">Continue</button>':''}
+  `;
+}
+
 function next(){
   step++;
 
-  if(step==1){
-    update("Wait… don’t skip this.");
-  }
-
-  if(step==2){
-    update("I made something for you…");
-  }
-
-  if(step==3){
-    update("Hey "+name+" 💖");
-  }
-
-  if(step==4){
-    update("This is not a normal birthday wish.");
-  }
+  if(step==1) render("Okay wait… don’t rush this 😶✨");
+  if(step==2) render("I didn’t just send a message… I made this for you 🫠");
+  if(step==3) render("Hey "+name+" 👀💖");
+  if(step==4) render("And no… this isn’t some basic birthday wish 😏🎁");
 
   if(step==5){
-    update("HAPPY BIRTHDAY 🎂💖");
-    confetti();
+    render("It’s YOUR day today 😌🎂✨");
+    confetti({particleCount:120,spread:80});
   }
 
   if(step==6){
-    showGift();
+    app.innerHTML=`
+      <h2 class="fade">Tap to open 🎁</h2>
+      <div class="gift" onclick="openGift()">🎁</div>
+    `;
   }
 
   if(step==7){
-    showLines();
+    showFun();
   }
 
   if(step==8){
-    showParagraph();
+    showFinal();
   }
 }
 
-function update(msg){
-  app.innerHTML=`<h2 class="fade">${msg}</h2>
-  <button onclick="next()">Next</button>`;
-}
-
-// gift
-function showGift(){
-  app.innerHTML=`
-  <h2>Tap to open 🎁</h2>
-  <div id="gift" onclick="openGift()">🎁</div>`;
-}
-
+/* gift */
 function openGift(){
-  app.innerHTML=`
-  <h2 class="fade">You make everything better 💖</h2>`;
   confetti();
-  setTimeout(next,2000);
+  render("Not gonna lie… life feels better with you in it 🫶🥹",false);
+  setTimeout(next,1800);
 }
 
-// fun lines
-function showLines(){
+/* fun */
+function showFun(){
   let lines=[
-    "We share one brain cell 😂",
-    "Still somehow survive life 😭"
+    "We talk nonsense… but somehow it makes sense 😂🧠",
+    "Half of our chats = random, other half = therapy 😭🫂"
   ];
-  let i=0;
 
-  function show(){
+  let i=0;
+  function loop(){
     if(i<lines.length){
-      app.innerHTML=`<h2 class="fade">${lines[i]}</h2>`;
+      render(lines[i],false);
       i++;
-      setTimeout(show,2000);
-    }else{
-      next();
-    }
+      setTimeout(loop,1800);
+    }else next();
   }
-  show();
+  loop();
 }
 
-// paragraph
-function showParagraph(){
-  app.innerHTML=`<div class="handwritten" id="para"></div>`;
+/* final paragraph */
+function showFinal(){
+  app.innerHTML=`<div class="paper" id="para"></div>`;
 
   let lines=[
-"I don’t say this often…",
+"I don’t usually do things like this… 😅",
+"But you’re not exactly a usual person in my life 💭",
 "",
-"But you actually matter to me.",
+"Somehow… you became important without me even realizing when it happened 🫠",
 "",
-"A lot more than you think.",
+"It’s the little things — random talks, stupid jokes, those unexpected deep conversations… 😂💬",
 "",
-"You make normal days better…",
-"And bad days easier.",
+"And honestly, I wouldn’t trade that for anything 🫶",
 "",
-"And no matter what happens…",
+"You just make things feel lighter… even on bad days 🌙",
 "",
-"I’m always gonna be here 🫶",
+"And yeah… I don’t say this much,",
+"But I really appreciate you being here 🤍",
 "",
-"Happy Birthday 💖"
+"So today isn’t just another day… it’s yours 🎂✨",
+"",
+"And I hope you feel as special as you actually are 💖🥺",
+"",
+"Happy Birthday "+name+" 🎂💖",
+"– Someone who actually cares 🫶"
   ];
 
   let i=0;
-  function show(){
+  function type(){
     if(i<lines.length){
       para.innerHTML+=lines[i]+"<br><br>";
       if(lines[i].includes("Happy")){
@@ -191,13 +204,12 @@ function showParagraph(){
         confetti();
       }
       i++;
-      setTimeout(show,800);
+      setTimeout(type,700);
     }else{
-      para.innerHTML+=`<br>– Someone`;
-      app.innerHTML+=`<button onclick="location.reload()">Replay 🔁</button>`;
+      app.innerHTML+=`<button class="btn" onclick="location.reload()">Replay 🔁</button>`;
     }
   }
-  show();
+  type();
 }
 </script>
 
