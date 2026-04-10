@@ -3,218 +3,243 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎉 Birthday/Bestie Surprise 💖</title>
-<link href="https://fonts.googleapis.com/css2?family=Sans+Bold&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<title>Birthday Surprise 🎂💖</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
-    body {
-        margin:0; padding:0;
-        font-family: 'Sans Bold', sans-serif;
-        background: linear-gradient(135deg, #ffd6e0, #d6e0ff);
-        overflow-x: hidden;
-        text-align:center;
-    }
-    .page {
-        display:none;
-        min-height:100vh;
-        justify-content:center;
-        align-items:center;
-        flex-direction:column;
-        padding:20px;
-        transition: opacity 0.8s;
-    }
-    .active { display:flex; opacity:1; }
-    .btn { 
-        padding:15px 30px; margin:10px; 
-        border:none; border-radius:10px; 
-        font-size:1.2rem; cursor:pointer; 
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .btn:hover { transform:scale(1.1); box-shadow:0px 4px 20px rgba(0,0,0,0.3);}
-    .btn-yes { background:#ff6f91; color:white; }
-    .btn-no { background:#ccc; color:#333; }
-    .progress { width:80%; height:15px; background:#eee; border-radius:10px; margin:20px auto; overflow:hidden; }
-    .progress-bar { height:100%; width:0%; background:#ff6f91; transition: width 0.5s; }
-    img.gif { width:250px; margin:10px auto; border-radius:15px; }
-    .popup-btn { position:fixed; bottom:20px; right:20px; background:#ffd6e0; border:none; padding:15px; border-radius:50%; font-size:1.2rem; cursor:pointer; z-index:999; }
-    .popup { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index:1000; }
-    .popup-content { background:white; padding:20px; border-radius:20px; max-width:90%; }
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:linear-gradient(135deg,#ffd6e0,#e6f0ff);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.app{
+  width:100%;
+  max-width:380px;
+  height:90vh;
+  background:white;
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  text-align:center;
+}
+
+img{
+  width:100%;
+  border-radius:12px;
+  max-height:220px;
+  object-fit:cover;
+}
+
+button{
+  padding:14px;
+  border:none;
+  border-radius:25px;
+  background:#ff6fa5;
+  color:white;
+  font-size:16px;
+  width:100%;
+}
+
+.progress{
+  height:6px;
+  background:#eee;
+  border-radius:10px;
+}
+.fill{
+  height:100%;
+  width:0%;
+  background:#ff6fa5;
+  border-radius:10px;
+  transition:.4s;
+}
+
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.popup-box{
+  background:white;
+  padding:20px;
+  border-radius:15px;
+  width:90%;
+  max-width:300px;
+}
+
+.msg-card{
+  background:#ffe6f0;
+  padding:15px;
+  border-radius:12px;
+  margin:10px 0;
+  cursor:pointer;
+}
+
+#creatorBtn{
+  position:fixed;
+  bottom:15px;
+  right:15px;
+  background:#ff6fa5;
+  padding:10px 15px;
+  border-radius:25px;
+  color:white;
+}
 </style>
 </head>
+
 <body>
 
-<!-- Progress Bar -->
-<div class="progress"><div class="progress-bar" id="progress"></div></div>
+<div class="app">
+  <div class="progress"><div class="fill" id="bar"></div></div>
 
-<!-- Pages -->
-<div class="page active" id="page1">
-    <h1 id="typing"></h1>
-    <button class="btn btn-yes" onclick="nextPage()">Next 👉</button>
+  <h2 id="text">Wait… 👀</h2>
+  <img id="gif" src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif">
+
+  <button id="btn" onclick="next()">Start 🎉</button>
 </div>
 
-<div class="page" id="page2">
-    <h1>🎂 Countdown to your Birthday 🎉</h1>
-    <h2 id="countdown"></h2>
-    <button class="btn btn-yes" onclick="nextPage()">Next 👉</button>
+<div id="creatorBtn" onclick="openPop()">Create 🎁</div>
+
+<div class="popup" id="pop">
+  <div class="popup-box">
+    <h3>Enter Name</h3>
+    <input id="name" style="width:100%;padding:10px;"><br><br>
+    <button onclick="save()">Done</button>
+  </div>
 </div>
 
-<div class="page" id="page3">
-    <h1>😂 Funny Chaos Page</h1>
-    <img class="gif" src="https://media.giphy.com/media/blSTtZehjAZ8I/giphy.gif">
-    <p>Remember all the stupid things we've done together?</p>
-    <button class="btn btn-yes" onclick="nextPage()">Next 👉</button>
-</div>
-
-<div class="page" id="page4">
-    <h1>🤣 Jokes & Roasts</h1>
-    <p id="roast">Loading random roast...</p>
-    <button class="btn btn-yes" onclick="nextPage()">Next 👉</button>
-</div>
-
-<div class="page" id="page5">
-    <h1>💖 Our Memories</h1>
-    <p>Who reached first? Who approached first?</p>
-    <button class="btn btn-yes" onclick="nextPage()">Next 👉</button>
-</div>
-
-<div class="page" id="page6">
-    <h1>🎂 Cake Time!</h1>
-    <img class="gif" src="https://media.giphy.com/media/3o7TKtnuHOHHUjR38Y/giphy.gif">
-    <button class="btn btn-yes" onclick="cutCake()">Cut Cake 🎉</button>
-</div>
-
-<div class="page" id="page7">
-    <h1>🥺 Emotional Page</h1>
-    <p>
-        Happy Birthday! You bring so much joy and laughter into my life. From silly jokes to serious talks, I can't imagine life without you. 
-        You make every moment special and unforgettable. Thanks for being the amazing human you are 💖
-    </p>
-    <img class="gif" src="https://media.giphy.com/media/1xVbafp7tZpF6/giphy.gif">
-    <button class="btn btn-yes" onclick="nextPage()">Next 👉</button>
-</div>
-
-<div class="page" id="page8">
-    <h1>✨ Special Messages</h1>
-    <button class="btn btn-yes" onclick="showMessages()">Open Messages 💌</button>
-</div>
-
-<div class="page" id="page9">
-    <h1>🎶 Party Time</h1>
-    <button class="btn btn-yes" onclick="playMusic()">Celebrate 🎉</button>
-    <audio id="birthdaySong" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-</div>
-
-<div class="page" id="page10">
-    <h1>🎊 Final Wrap-Up</h1>
-    <p>Thanks for being my awesome bestie! Here's to more chaos, laughs, and unforgettable memories 🫶</p>
-    <img class="gif" src="https://media.giphy.com/media/blSTtZehjAZ8I/giphy.gif">
-    <button class="btn btn-yes" onclick="restart()">Restart Chaos 🔁</button>
-</div>
-
-<!-- Create Your Own Popup Button -->
-<button class="popup-btn" onclick="toggleCreatePopup()">✏️ Create Your Surprise</button>
-
-<!-- Create Your Own Popup -->
-<div class="popup" id="createPopup">
-    <div class="popup-content">
-        <h2>Create Your Surprise</h2>
-        <input type="text" id="senderName" placeholder="Your Name"><br><br>
-        <input type="text" id="birthdayName" placeholder="Birthday Person Name"><br><br>
-        <select id="relation">
-            <option value="bestie">Bestie</option>
-            <option value="mom">Mom</option>
-            <option value="dad">Dad</option>
-            <option value="sibling">Sibling</option>
-            <option value="friend">Friend</option>
-        </select><br><br>
-        <button class="btn btn-yes" onclick="generateLink()">Generate Link 🔗</button>
-        <button class="btn btn-no" onclick="toggleCreatePopup()">Close ❌</button>
-        <p id="shareLink"></p>
-    </div>
+<div class="popup" id="msgPop">
+  <div class="popup-box">
+    <h3>Special Messages 💌</h3>
+    <div id="msgBox"></div>
+    <p id="count"></p>
+  </div>
 </div>
 
 <script>
-let currentPage = 1;
-const totalPages = 10;
-const pages = document.querySelectorAll('.page');
-const progressBar = document.getElementById('progress');
+let step=0;
+let name="Someone";
 
-// Typing animation
-const typingText = ["Hey Bestie 💖","You are literally stuck with me 😌","After all the chaos we've done...","So answer carefully 👀"];
-let typingIndex = 0;
-let charIndex = 0;
-const typingEl = document.getElementById('typing');
+function next(){
+  step++;
+  bar.style.width=(step*11)+"%";
 
-function typeWriter(){
-    if(charIndex < typingText[typingIndex].length){
-        typingEl.innerHTML += typingText[typingIndex].charAt(charIndex);
-        charIndex++;
-        setTimeout(typeWriter,50);
-    }else{
-        typingIndex++;
-        charIndex=0;
-        if(typingIndex<typingText.length){
-            typingEl.innerHTML += "<br>";
-            setTimeout(typeWriter,500);
-        }
-    }
+  if(step==1){
+    text.innerText="Hey "+name+" 💖";
+  }
+
+  if(step==2){
+    text.innerText="This is not a normal birthday wish 👀";
+  }
+
+  if(step==3){
+    text.innerText="Something special is coming 😏";
+  }
+
+  if(step==4){
+    text.innerText="Loading surprise...";
+    btn.style.display="none";
+    let i=0;
+    let load=setInterval(()=>{
+      bar.style.width=(40+i*5)+"%";
+      i++;
+      if(i>10){
+        clearInterval(load);
+        btn.style.display="block";
+        text.innerText="Ready? 🎁";
+      }
+    },100);
+  }
+
+  if(step==5){
+    text.innerText="HAPPY BIRTHDAY 🎂💖";
+    gif.src="https://media.giphy.com/media/blSTtZehjAZ8I/giphy.gif";
+    confetti();
+  }
+
+  if(step==6){
+    text.innerText="We both share one brain cell 😂";
+  }
+
+  if(step==7){
+    text.innerText="Still can't believe you tolerate me 😭";
+  }
+
+  if(step==8){
+    btn.innerText="Open Messages 💌";
+    btn.onclick=openMessages;
+  }
+
+  if(step==9){
+    showParagraph();
+  }
 }
-typeWriter();
 
-// Page navigation
-function nextPage(){
-    pages[currentPage-1].classList.remove('active');
-    currentPage++;
-    pages[currentPage-1].classList.add('active');
-    progressBar.style.width = (currentPage/totalPages*100)+"%";
+function openPop(){pop.style.display="flex";}
+function save(){
+  name=document.getElementById("name").value||"Someone";
+  pop.style.display="none";
 }
 
-// Roasts
-const roasts = [
-    "You still owe me food 🍕",
-    "Remember that embarrassing moment 👀",
-    "Wrong answer detected 😎",
-    "Try again bestie 😂"
+const msgs=[
+"With Love 💖\nYou bring so much joy!",
+"Dream Big ✨\nMay all dreams come true!",
+"New Adventures 🚀\nAmazing memories ahead!",
+"You're Amazing 🫶\nYou deserve everything!"
 ];
-const roastEl = document.getElementById('roast');
-roastEl.innerText = roasts[Math.floor(Math.random()*roasts.length)];
 
-// Cake cut
-function cutCake(){
-    confetti({particleCount:100, spread:70});
-    nextPage();
+let i=0;
+
+function openMessages(){
+  msgPop.style.display="flex";
+  i=0;
+  showMsg();
 }
 
-// Special Messages
-function showMessages(){
-    alert("💌 With Love: You bring so much joy! \n💌 Dream Big: All your dreams come true! \n💌 New Adventures: Amazing memories await! \n💌 You're Amazing: You deserve all happiness!");
-    nextPage();
+function showMsg(){
+  if(i<msgs.length){
+    msgBox.innerHTML=`<div class="msg-card">${msgs[i]}</div>`;
+    count.innerText="Remaining: "+(msgs.length-i);
+    msgBox.onclick=()=>{i++;showMsg();}
+  }else{
+    msgBox.innerHTML="<h3>All Done ✨</h3>";
+    count.innerText="";
+    confetti();
+  }
 }
 
-// Music
-function playMusic(){
-    document.getElementById('birthdaySong').play();
-    nextPage();
-}
+function showParagraph(){
+  document.querySelector(".app").innerHTML=`
+  <h3>💌</h3>
+  <p id="para"></p>
+  <button onclick="location.reload()">Restart 🔁</button>
+  `;
 
-// Restart
-function restart(){
-    currentPage=0;
-    nextPage();
-    progressBar.style.width="0%";
-}
+  let textPara="I don’t even know where to start... but I’m really glad you exist. From stupid jokes to real talks... everything with you feels different. You matter a lot more than you think. Happy Birthday 💖";
+  let i=0;
 
-// Create popup
-function toggleCreatePopup(){
-    document.getElementById('createPopup').style.display = document.getElementById('createPopup').style.display === 'flex' ? 'none':'flex';
-}
-function generateLink(){
-    const sender = document.getElementById('senderName').value || "Someone";
-    const birthday = document.getElementById('birthdayName').value || "Special Person";
-    const relation = document.getElementById('relation').value;
-    const link = window.location.href+"?sender="+encodeURIComponent(sender)+"&birthday="+encodeURIComponent(birthday)+"&relation="+encodeURIComponent(relation);
-    document.getElementById('shareLink').innerHTML = `Share this link: <a href="${link}" target="_blank">${link}</a>`;
+  function type(){
+    if(i<textPara.length){
+      document.getElementById("para").innerHTML+=textPara[i];
+      i++;
+      setTimeout(type,30);
+    }
+  }
+  type();
 }
 </script>
+
 </body>
-     </html>
+</html>
