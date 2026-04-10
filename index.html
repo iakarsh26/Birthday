@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Birthday Surprise 💖</title>
+<title>For You 💖</title>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -21,23 +21,19 @@ body{
 .app{
   width:100%;
   max-width:380px;
-  height:92vh;
+  height:90vh;
   background:white;
   border-radius:20px;
-  padding:16px;
+  padding:20px;
   box-shadow:0 10px 25px rgba(0,0,0,0.2);
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
+  justify-content:center;
   text-align:center;
+  transition:0.5s;
 }
 
-img{
-  width:100%;
-  max-height:200px;
-  object-fit:cover;
-  border-radius:12px;
-}
+h2{margin-bottom:20px;}
 
 button{
   padding:14px;
@@ -45,169 +41,80 @@ button{
   border-radius:25px;
   background:#ff6fa5;
   color:white;
-  font-size:15px;
-  width:100%;
-  margin-top:10px;
+  font-size:16px;
+  margin-top:20px;
 }
 
-.progress{
-  height:6px;
-  background:#eee;
-  border-radius:10px;
+.fade{
+  animation:fade 0.5s ease;
 }
-.fill{
-  height:100%;
-  width:0%;
-  background:#ff6fa5;
-  border-radius:10px;
-  transition:.4s;
+@keyframes fade{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
 }
 
-.popup{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.6);
-  display:none;
-  justify-content:center;
-  align-items:center;
-}
-.popup-box{
-  background:white;
-  padding:20px;
-  border-radius:15px;
-  width:90%;
-  max-width:300px;
+#gift{
+  font-size:70px;
+  cursor:pointer;
 }
 
-#creatorBtn{
-  position:fixed;
-  bottom:15px;
-  right:15px;
-  background:#ff6fa5;
-  padding:10px 15px;
-  border-radius:25px;
-  color:white;
-}
-
-/* cinematic */
-#overlay{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-}
 .handwritten{
   background:#fff8e7;
   padding:15px;
   border-radius:12px;
   text-align:left;
+  line-height:1.6;
 }
+
 .glow{
   color:#ff4d88;
   font-weight:bold;
 }
-
-/* gift */
-#giftBox{font-size:70px;cursor:pointer;}
 </style>
 </head>
 
 <body>
 
-<div class="app">
-  <div class="progress"><div class="fill" id="bar"></div></div>
-
+<div class="app" id="app">
   <h2 id="text">Wait… 👀</h2>
-  <img id="gif" src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif">
-
-  <button id="btn" onclick="next()">Start 🎉</button>
+  <button onclick="next()">Start</button>
 </div>
-
-<div id="creatorBtn" onclick="openPop()">Create 🎁</div>
-
-<!-- POPUP -->
-<div class="popup" id="pop">
-  <div class="popup-box">
-    <h3>Create 🎁</h3>
-    <input id="fromName" placeholder="Your Name" style="width:100%;padding:10px;margin:5px 0;">
-    <input id="toName" placeholder="Birthday Person" style="width:100%;padding:10px;margin:5px 0;">
-    <button onclick="generateLink()">Generate 🔗</button>
-    <p id="linkBox"></p>
-    <button onclick="copyLink()">Copy 📋</button>
-    <button onclick="shareWA()">WhatsApp 📲</button>
-  </div>
-</div>
-
-<!-- MESSAGE POP -->
-<div class="popup" id="msgPop">
-  <div class="popup-box">
-    <h3>Messages 💌</h3>
-    <div id="msgBox"></div>
-    <p id="count"></p>
-  </div>
-</div>
-
-<audio id="bgMusic" loop>
-  <source src="https://www.bensound.com/bensound-music/bensound-happyrock.mp3">
-</audio>
-
-<button onclick="toggleMusic()" style="position:fixed;top:10px;right:10px;">🔊</button>
 
 <script>
 let step=0;
-let from="Someone";
-let to="Friend";
+let name="Someone";
 
-// URL params
-const params=new URLSearchParams(location.search);
-from=params.get("from")||"Someone";
-to=params.get("to")||"Friend";
-
-text.innerText="Hey "+to+" 💖";
-
-// SOUND
-const clickSound=new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
-
-// FLOW
+// flow
 function next(){
-  clickSound.play();
   step++;
-  bar.style.width=(step*10)+"%";
 
   if(step==1){
-    text.innerText="This is not normal 👀";
+    update("Wait… don’t skip this.");
   }
 
   if(step==2){
-    text.innerText="Something special is coming 😏";
+    update("I made something for you…");
   }
 
   if(step==3){
-    text.innerText="Loading...";
-    btn.style.display="none";
-    setTimeout(()=>{btn.style.display="block";text.innerText="Ready?"},1500);
+    update("Hey "+name+" 💖");
   }
 
   if(step==4){
-    text.innerText="HAPPY BIRTHDAY "+to+" 🎂💖";
-    gif.src="https://media.giphy.com/media/blSTtZehjAZ8I/giphy.gif";
-    confetti();
+    update("This is not a normal birthday wish.");
   }
 
   if(step==5){
-    text.innerHTML="Open your gift 🎁<div id='giftBox' onclick='openGift()'>🎁</div>";
-    btn.style.display="none";
+    update("HAPPY BIRTHDAY 🎂💖");
+    confetti();
   }
 
   if(step==6){
-    text.innerText="Cut the cake 🎂";
-    btn.innerText="Cut Cake 🎂";
-    btn.style.display="block";
-    btn.onclick=cutCake;
+    showGift();
   }
 
   if(step==7){
-    btn.innerText="Open Messages 💌";
-    btn.onclick=openMsg;
+    showLines();
   }
 
   if(step==8){
@@ -215,64 +122,64 @@ function next(){
   }
 }
 
-// GIFT
+function update(msg){
+  app.innerHTML=`<h2 class="fade">${msg}</h2>
+  <button onclick="next()">Next</button>`;
+}
+
+// gift
+function showGift(){
+  app.innerHTML=`
+  <h2>Tap to open 🎁</h2>
+  <div id="gift" onclick="openGift()">🎁</div>`;
+}
+
 function openGift(){
-  document.getElementById("giftBox").innerText="🎉";
+  app.innerHTML=`
+  <h2 class="fade">You make everything better 💖</h2>`;
   confetti();
-  setTimeout(next,1200);
+  setTimeout(next,2000);
 }
 
-// CAKE
-function cutCake(){
-  confetti();
-  setTimeout(next,1000);
-}
+// fun lines
+function showLines(){
+  let lines=[
+    "We share one brain cell 😂",
+    "Still somehow survive life 😭"
+  ];
+  let i=0;
 
-// MESSAGES
-let msgs=[
-"With Love 💖",
-"Dream Big ✨",
-"New Adventures 🚀",
-"You're Amazing 🫶"
-];
-let i=0;
-
-function openMsg(){
-  msgPop.style.display="flex";
-  i=0;
-  showMsg();
-}
-
-function showMsg(){
-  if(i<msgs.length){
-    msgBox.innerHTML=msgs[i];
-    count.innerText="Remaining: "+(msgs.length-i);
-    msgBox.onclick=()=>{i++;showMsg();}
-  }else{
-    msgBox.innerHTML="All Done ✨ Tap";
-    count.innerText="";
-    msgBox.onclick=()=>{
-      msgPop.style.display="none";
+  function show(){
+    if(i<lines.length){
+      app.innerHTML=`<h2 class="fade">${lines[i]}</h2>`;
+      i++;
+      setTimeout(show,2000);
+    }else{
       next();
     }
   }
+  show();
 }
 
-// PARAGRAPH
+// paragraph
 function showParagraph(){
-  document.querySelector(".app").innerHTML=`
-  <div id="overlay"></div>
-  <div class="handwritten" id="para"></div>
-  <button onclick="location.reload()">Restart 🔁</button>
-  `;
+  app.innerHTML=`<div class="handwritten" id="para"></div>`;
 
   let lines=[
-"I’m really glad you exist.",
-"From stupid jokes to real talks…",
-"You make everything better.",
-"You matter. A lot.",
-"Happy Birthday "+to+" 💖",
-"– "+from
+"I don’t say this often…",
+"",
+"But you actually matter to me.",
+"",
+"A lot more than you think.",
+"",
+"You make normal days better…",
+"And bad days easier.",
+"",
+"And no matter what happens…",
+"",
+"I’m always gonna be here 🫶",
+"",
+"Happy Birthday 💖"
   ];
 
   let i=0;
@@ -285,41 +192,13 @@ function showParagraph(){
       }
       i++;
       setTimeout(show,800);
+    }else{
+      para.innerHTML+=`<br>– Someone`;
+      app.innerHTML+=`<button onclick="location.reload()">Replay 🔁</button>`;
     }
   }
   show();
 }
-
-// CREATE
-function openPop(){pop.style.display="flex";}
-function generateLink(){
-  let f=fromName.value||"Someone";
-  let t=toName.value||"Friend";
-  let url=location.origin+location.pathname+`?from=${f}&to=${t}`;
-  linkBox.innerText=url;
-}
-function copyLink(){
-  navigator.clipboard.writeText(linkBox.innerText);
-  alert("Copied 😎");
-}
-function shareWA(){
-  window.open("https://wa.me/?text="+encodeURIComponent(linkBox.innerText));
-}
-
-// MUSIC
-let playing=false;
-function toggleMusic(){
-  if(playing){bgMusic.pause();}
-  else{bgMusic.play();}
-  playing=!playing;
-}
-
-// SWIPE
-let startY=0;
-document.addEventListener("touchstart",e=>startY=e.touches[0].clientY);
-document.addEventListener("touchend",e=>{
-  if(startY-e.changedTouches[0].clientY>50){next();}
-});
 </script>
 
 </body>
